@@ -8,7 +8,7 @@ An intelligent Android + ESP32-based object tracking system that uses real-time 
 
 This project was part of my **Bachelor's degree final project** at *Université Frères Mentouri - Constantine 1*. It combines:
 
-- 📱 An **Android app** (Kotlin/Java)
+- 📱 An **Android app** (Java)
 - 📷 **OpenCV** for real-time object coordinate detection
 - 🤖 An **ESP32 module** that controls 2 servo motors
 
@@ -16,7 +16,7 @@ This project was part of my **Bachelor's degree final project** at *Université 
 
 ## 📱 Android App
 
-Built using **Kotlin/Java**, the Android app opens the camera and allows the user to **select an object** by tapping on it. After selection:
+Built using **Java**, the Android app opens the camera and allows the user to **select an object** by tapping on it. After selection:
 
 - OpenCV tracks the object and **continuously extracts its X/Y coordinates**.
 - These coordinates are sent via **Wi-Fi** to an ESP32 module.
@@ -64,9 +64,9 @@ Included in the project is the ESP32-side code: `ESP32_SIDE.ino`
 
 ## 🛠 Tech Stack
 
-| Component      | Technology              |
+| Component      | Technology               |
 |----------------|--------------------------|
-| Android App    | Kotlin / Java            |
+| Android App    |  Java                    |
 | Vision         | OpenCV                   |
 | Microcontroller| ESP32 (C++ / Arduino)    |
 | Communication  | Wi-Fi + HTTP             |
@@ -76,13 +76,16 @@ Included in the project is the ESP32-side code: `ESP32_SIDE.ino`
 
 ## 📸 Screenshots
 
-*To be added here...*
+<p float="left">
+  <img src="https://i.imgur.com/kTSjcah.jpeg" width="45%" />
+  <img src="https://i.imgur.com/xgSEl4v.jpeg" width="45%" />
+</p>
 
 ---
 
 ## 🎥 Demo Video
 
-*Will be added here...*
+[![Watch the Demo](https://img.youtube.com/vi/GER8cid8R_U/0.jpg)](https://youtu.be/GER8cid8R_U?si=vyJmwrHhltkC5r1h)
 
 ---
 
@@ -95,7 +98,6 @@ Included in the project is the ESP32-side code: `ESP32_SIDE.ino`
 ## 👤 Author
 
 **Charaf Boulmerka**  
-Android & Web Developer  
 📧 charaf.boulmerka25@gmail.com  
 
 ---
