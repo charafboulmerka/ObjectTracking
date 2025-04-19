@@ -98,6 +98,7 @@ Included in the project is the ESP32-side code: `ESP32_SIDE.ino`
 ## 👤 Author
 
 **Charaf Boulmerka**  
+Android & Laravel Developer | IoT & CRM Solutions
 📧 charaf.boulmerka25@gmail.com  
 
 ---
