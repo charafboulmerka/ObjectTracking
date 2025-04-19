@@ -5,9 +5,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
+//import android.bluetooth.BluetoothAdapter;
+//import android.bluetooth.BluetoothDevice;
+//import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -64,9 +64,15 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.ahmedabdelmeged.bluetoothmc.BluetoothMC;
-import com.ahmedabdelmeged.bluetoothmc.ui.BluetoothDevices;
-import com.ahmedabdelmeged.bluetoothmc.util.BluetoothStates;
+//import com.ahmedabdelmeged.bluetoothmc.BluetoothMC;
+//import com.ahmedabdelmeged.bluetoothmc.ui.BluetoothDevices;
+//import com.ahmedabdelmeged.bluetoothmc.util.BluetoothStates;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -156,9 +162,10 @@ public class CameraFragment extends Fragment  {
     private final int REQUEST_CONNECT_CODE = 68;
     private String mBluetoothDevAddr = "";
     private String mSelectedTracker = "TrackerMedianFlow";
-    BluetoothMC bluetoothMC = new BluetoothMC();
+   // BluetoothMC bluetoothMC = new BluetoothMC();
     private Boolean isGoShow=false;
     private Integer mCounter = 9;
+    private Boolean isAvailable = true;
 
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
@@ -271,6 +278,8 @@ public class CameraFragment extends Fragment  {
         mTextureView.setSurfaceTextureListener(textureListener);
         return view;
     }
+
+
 
 
     private final CameraCaptureSession.CaptureCallback captureCallback =
@@ -434,7 +443,7 @@ public class CameraFragment extends Fragment  {
                 mPoints[1].y = mPoints[0].y + (int) (trackingRectangle.height * (float) mTrackingOverlay.getHeight() / (float) mImageGrab.rows());
 
                 mTrackingOverlay.postInvalidate();
-                if(bluetoothMC.isBluetoothAvailable()) {
+                if(isAvailable) {
                     String dataBle = Integer.toString((mPoints[0].x + mPoints[1].x) / 2) + "," +
                             //Integer.toString(mTrackingOverlay.getWidth()) + "," +
                             Integer.toString((mPoints[0].y + mPoints[1].y) / 2); //+ "," +
@@ -451,8 +460,8 @@ public class CameraFragment extends Fragment  {
 
 
                     if (isGoShow){
-                        if (mCounter>=30){
-                            sendBLE(dataBle);
+                        if (mCounter>=5){
+                            sendESP(dataBle);
                             isGoShow=false;
                             mCounter=0;
                         }
@@ -585,7 +594,7 @@ public class CameraFragment extends Fragment  {
                                 if ((mPoints[0].x - mPoints[1].x != 0) && (mPoints[0].y - mPoints[1].y != 0)) {
                                     mTargetLocked = true;
                                     Toast toast = Toast.makeText(getActivity(), "Target is LOCKED !", Toast.LENGTH_LONG);
-                                    if (bluetoothMC.isBluetoothAvailable()){
+                                    if (isAvailable){
                                         Log.e("CC1013","BLE AVAILABLE");
                                         //bluetoothMC.send("c");
                                     }
@@ -598,9 +607,11 @@ public class CameraFragment extends Fragment  {
                             } else {
                                 mTargetLocked = false;
                                 Toast toast = Toast.makeText(getActivity(), "Target is UNLOCKED !", Toast.LENGTH_LONG);
-                                if (bluetoothMC.isBluetoothAvailable()){
+                                if (isAvailable){
                                     Log.e("CC1013","BLE AVAILABLE");
-                                    bluetoothMC.send("clear");
+                                    //bluetoothMC.send("clear");
+                                    sendESP("clear");
+
                                     //bluetoothMC.send("o");
                                 }
 
@@ -736,8 +747,25 @@ public class CameraFragment extends Fragment  {
         socket = null;
     }
 
-    private void sendBLE(String str) {
+    private void sendESP(String str) {
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://192.168.4.1/"+str;
+      StringRequest st = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+          @Override
+          public void onResponse(String response) {
+            Log.e("SENDING",response.toString());
+          }
+      }, new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+              Log.e("VOLLEY", error.toString());
+          }
+      });
 
+      queue.add(st);
+       // t.sendRequest(str);
+
+/*
         if(!bluetoothMC.isBluetoothAvailable()) {
             Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
             return;
@@ -750,6 +778,8 @@ public class CameraFragment extends Fragment  {
         } catch (Exception e) {
 
         }
+
+ */
 
 
     }
@@ -815,11 +845,11 @@ public class CameraFragment extends Fragment  {
             getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "devices").addToBackStack(null).commit();
             return true;
         }
-        else if (id==R.id.setup){
+        /*else if (id==R.id.setup){
             Intent intent = new Intent(getActivity(), BluetoothDevices.class);
             startActivityForResult(intent, BluetoothStates.REQUEST_CONNECT_DEVICE);
             return true;
-        }
+        }*/
         else if (id == R.id.camera_cordinate) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -931,12 +961,12 @@ public class CameraFragment extends Fragment  {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == BluetoothStates.REQUEST_CONNECT_DEVICE) {
+        /*if (requestCode == BluetoothStates.REQUEST_CONNECT_DEVICE) {
             if (resultCode == Activity.RESULT_OK) {
-                bluetoothMC.connect(data);
+               // bluetoothMC.connect(data);
                // bluetoothMC.send("1");
             }
-        }
+        }*/
     }
 
 

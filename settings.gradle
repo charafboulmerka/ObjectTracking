@@ -1,3 +1,17 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        mavenLocal()
+        maven { url = uri("https://maven.aliyun.com/repository/public") } // Better than jcenter proxy
+        maven { url =uri("https://maven.aliyun.com/repository/jcenter") }
+    }
+}
+
+
+
 include ':ObjectTrackingCamera'
 rootProject.name='ObjectTracking'
 include ':openCVLibrary348'
